@@ -1,0 +1,4 @@
+node_modules/
+renders/render.log
+renders/preview_*
+renders/*_sheet.png

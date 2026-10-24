@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TEMPVS — Mechanical Watch</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+    body { display: grid; place-items: center; }
+    #stage { height: 100vh; width: calc(100vh * 9 / 16); max-width: 100vw; max-height: calc(100vw * 16 / 9); display: block; }
+    #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1 ui-monospace, monospace; color: #666; }
+    body.capture #stage { width: 1080px; height: 1920px; max-width: none; max-height: none; }
+    body.capture #hud { display: none; }
+  </style>
+  <script>if (location.search.includes('capture')) document.documentElement.classList.add('capture');</script>
+  <script src="vendor/gsap/gsap.min.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <canvas id="stage" width="1080" height="1920"></canvas>
+  <div id="hud"></div>
+  <script>if (location.search.includes('capture')) document.body.classList.add('capture');</script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

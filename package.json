@@ -1,0 +1,16 @@
+{
+  "name": "tempvs-mechanical-watch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "12 s vertical (1080x1920) cinematic of a floating mechanical watch — Three.js, GLSL, GSAP",
+  "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 8080",
+    "stills": "node tools/render.mjs stills 1 4 7 11 --dir final",
+    "video": "node tools/render.mjs video --fps 30"
+  },
+  "dependencies": {
+    "gsap": "3.12.5",
+    "three": "0.169.0"
+  }
+}
