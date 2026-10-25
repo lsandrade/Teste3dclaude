@@ -120,6 +120,11 @@
 
 <div id="loading">Carregando personagem…</div>
 
+<script>
+  // surface load/runtime failures instead of leaving the loading screen up
+  addEventListener('error', (e) => { const l = document.getElementById('loading'); if (l && !l.hidden) l.textContent = 'Erro ao iniciar: ' + (e.message || 'arquivo não carregou'); }, true);
+  addEventListener('unhandledrejection', (e) => { const l = document.getElementById('loading'); if (l && !l.hidden) l.textContent = 'Erro ao iniciar: ' + (e.reason && e.reason.message || e.reason); });
+</script>
 <script type="importmap">
   { "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }
 </script>

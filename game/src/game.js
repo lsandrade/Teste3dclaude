@@ -194,7 +194,37 @@ function burst(at) {
 
 // ------------------------------------------------------------------ character
 const loader = new GLTFLoader();
-const [xbot, michelle] = await Promise.all([loader.loadAsync('assets/models/Xbot.glb'), loader.loadAsync('assets/models/Michelle.glb')]);
+// Models load from .glb; hosts that only serve web types get a base64 text copy,
+// decoded here and parsed in memory so the loader makes no further requests.
+async function loadModel(name) {
+  try {
+    const res = await fetch(`assets/models/${name}.glb`);
+    if (res.ok) return await loader.parseAsync(await res.arrayBuffer(), '');
+  } catch (e) { /* fall through */ }
+  const res = await fetch(`assets/models/${name}.glb.b64.txt`);
+  if (!res.ok) throw new Error(`modelo ${name} não encontrado (${res.status})`);
+  const raw = atob((await res.text()).trim());
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  return loader.parseAsync(bytes.buffer, '');
+}
+// The samba may ship pre-retargeted (assets/anim/samba.json); otherwise it is
+// retargeted from the Michelle rig at load time.
+async function loadSambaBaked() {
+  try {
+    const res = await fetch('assets/anim/samba.json');
+    if (res.ok) return THREE.AnimationClip.parse(await res.json());
+  } catch (e) { /* fall through */ }
+  return null;
+}
+let xbot, michelle = null, sambaBaked = null;
+try {
+  [xbot, sambaBaked] = await Promise.all([loadModel('Xbot'), loadSambaBaked()]);
+  if (!sambaBaked) michelle = await loadModel('Michelle');
+} catch (e) {
+  $('loading').textContent = `Não foi possível carregar o personagem: ${e.message}`;
+  throw e;
+}
 const hero = xbot.scene;
 hero.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
 scene.add(hero);
@@ -251,7 +281,7 @@ function retarget(clip, srcRoot, dstRoot, fps = 30) {
   tracks.push(new THREE.VectorKeyframeTrack('mixamorigHips.position', times, hipPos));
   return new THREE.AnimationClip('samba', clip.duration, tracks);
 }
-clips.samba = retarget(michelle.animations.find((c) => c.name === 'SambaDance'), michelle.scene, hero);
+clips.samba = sambaBaked || retarget(michelle.animations.find((c) => c.name === 'SambaDance'), michelle.scene, hero);
 
 // in-place locomotion: drop horizontal hips drift so movement comes from the controller
 for (const name of ['idle', 'walk', 'run']) {
@@ -530,5 +560,5 @@ function frame() {
   requestAnimationFrame(frame);
 }
 $('loading').hidden = true;
-window.__game = { state, base, additive, jump, gesture, toggleDance, keys, setCam: (y, p, d) => { camYaw = y; camPitch = p; camDist = d; updateCamera(0, true); } };
+window.__game = { clips, state, base, additive, jump, gesture, toggleDance, keys, setCam: (y, p, d) => { camYaw = y; camPitch = p; camDist = d; updateCamera(0, true); } };
 requestAnimationFrame(frame);

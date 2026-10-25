@@ -24,8 +24,12 @@ python3 -m http.server 8080   # na raiz do repositório
 
 - **idle, walk e run** são misturados pelo peso conforme a velocidade. O ritmo do ciclo acompanha a velocidade real, para os pés não escorregarem.
 - **Agachar e os gestos** (`sneak_pose`, `agree`, `headShake`) entram como camadas aditivas por cima da locomoção.
-- **A samba** vem do rig da Michelle. Ela é re-mapeada para o X Bot em tempo de carregamento: os dois rigs foram exportados com eixos de osso diferentes, então cada quadro é convertido como delta de rotação em espaço de mundo a partir da pose de repouso (ver `retarget()` em `src/game.js`).
+- **A samba** vem do rig da Michelle e é distribuída já re-mapeada em `assets/anim/samba.json`. Se esse arquivo for apagado, ela é re-mapeada a partir do `Michelle.glb` ao carregar. Ela é re-mapeada para o X Bot em tempo de carregamento: os dois rigs foram exportados com eixos de osso diferentes, então cada quadro é convertido como delta de rotação em espaço de mundo a partir da pose de repouso (ver `retarget()` em `src/game.js`).
 - **O pulo é procedural:** agachamento de antecipação, arco balístico e absorção na queda. Esses arquivos do Mixamo não trazem clipe de pulo.
+
+## Hospedagem restrita
+
+Em hosts que só servem tipos web, ou que bloqueiam `fetch` de `data:` URIs por CSP, o modelo pode ir como `Xbot.glb.b64.txt` (base64 do `.glb`). O jogo tenta primeiro `Xbot.glb` e, se falhar, usa a cópia em texto, decodificada em memória. Se algo falhar, a tela de carregamento mostra o erro.
 
 ## Assets e licenças
 
