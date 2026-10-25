@@ -2,3 +2,5 @@ node_modules/
 renders/render.log
 renders/preview_*
 renders/*_sheet.png
+renders/*_master.mp4
+renders/video_sheet.png

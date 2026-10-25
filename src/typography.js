@@ -17,12 +17,17 @@ export function createTypography(w, h) {
   texture.minFilter = THREE.LinearFilter;
   texture.generateMipmaps = false;
 
+  // Bundled OFL fonts first; if they can't load (e.g. a host that blocks local
+  // font files) fall back to the same families from Google Fonts, if linked.
   const ready = (async () => {
     const faces = [
-      new FontFace('Cormorant', 'url(assets/fonts/CormorantGaramond.ttf)', { weight: '300 700' }),
+      new FontFace('Cormorant Garamond', 'url(assets/fonts/CormorantGaramond.ttf)', { weight: '300 700' }),
       new FontFace('Jost', 'url(assets/fonts/Jost.ttf)', { weight: '100 900' }),
     ];
-    for (const f of faces) document.fonts.add(await f.load());
+    for (const f of faces) {
+      try { document.fonts.add(await f.load()); } catch (e) { console.warn('font fallback:', f.family); }
+    }
+    await Promise.all([document.fonts.load('300 64px "Cormorant Garamond"'), document.fonts.load('300 24px Jost')]).catch(() => {});
   })();
 
   const s = h / 1920; // layout authored at 1080x1920
@@ -40,7 +45,7 @@ export function createTypography(w, h) {
     // ---- title: per-letter reveal
     const ty = 1505 * s;
     const size = 132 * s;
-    ctx.font = `300 ${size}px Cormorant`;
+    ctx.font = `300 ${size}px "Cormorant Garamond", Georgia, serif`;
     ctx.textBaseline = 'alphabetic';
     const track = (0.42 + 0.12 * (1 - ease(title))) * size;
     const widths = [...TITLE].map((c) => ctx.measureText(c).width);
@@ -90,7 +95,7 @@ export function createTypography(w, h) {
       const p = ease(tag);
       const tsz = 25 * s;
       ctx.save();
-      ctx.font = `300 ${tsz}px Jost`;
+      ctx.font = `300 ${tsz}px Jost, "Helvetica Neue", Arial, sans-serif`;
       ctx.letterSpacing = `${((0.55 + 0.25 * (1 - p)) * tsz).toFixed(2)}px`;
       ctx.textAlign = 'center';
       ctx.globalAlpha = p * 0.85;

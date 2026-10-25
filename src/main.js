@@ -12,7 +12,7 @@ const params = new URLSearchParams(location.search);
 const CAPTURE = params.has('capture');
 const DURATION = 12;
 const W = 1080, H = 1920;
-const scale = parseFloat(params.get('scale') || (CAPTURE ? '1' : '0.5'));
+const scale = parseFloat(params.get('scale') || window.TEMPVS_SCALE || (CAPTURE ? '1' : '0.5'));
 const RW = Math.round(W * scale), RH = Math.round(H * scale);
 
 // ------------------------------------------------------------------ renderer
@@ -317,6 +317,8 @@ if (!CAPTURE) {
     }
   });
   const loop = () => {
+    // skip work while the canvas is hidden (e.g. embedded page showing the video)
+    if (canvas.offsetParent === null) { requestAnimationFrame(loop); return; }
     const t = paused ? pauseAt : (((performance.now() - start) / 1000 + offset) % DURATION + DURATION) % DURATION;
     renderAt(t);
     if (hud) hud.textContent = `${t.toFixed(2)} s`;

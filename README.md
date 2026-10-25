@@ -8,6 +8,7 @@ Um relógio de bolso mecânico flutua num estúdio escuro. A câmera se aproxima
 | ![](renders/final/frame_00001s.png) | ![](renders/final/frame_00004s.png) | ![](renders/final/frame_00007s.png) | ![](renders/final/frame_00011s.png) |
 
 Vídeo: [`renders/tempvs_1080x1920.mp4`](renders/tempvs_1080x1920.mp4) (H.264, 30 fps, 360 quadros, renderização determinística).
+O render mestre sai em CRF 15 (~95 MB, fora do git). O arquivo versionado é uma re-codificação CRF 21 (~12,6 MB).
 
 ## Executar
 
@@ -26,7 +27,7 @@ Requer Node 18+, Playwright com Chromium e ffmpeg com libx264.
 
 ```bash
 node tools/render.mjs stills 1 4 7 11 --dir final   # PNGs em renders/final/
-node tools/render.mjs video --fps 30                 # renders/tempvs_1080x1920.mp4
+node tools/render.mjs video --fps 30                 # renders/tempvs_1080x1920.mp4 (mestre CRF 15)
 ```
 
 O script abre `index.html?capture` num Chromium headless (WebGL2 via SwiftShader). Para cada quadro `i`, ele chama `window.renderAt(i / fps)` e envia o PNG do canvas para o ffmpeg por pipe.
